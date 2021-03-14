@@ -74,7 +74,10 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             messages.add(new Message("Сonnection established!", "SERVER:"));
+                            // Display message
                             adapter.notifyItemInserted(messages.size());
+                            // Scroll down
+                            recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
                         }
                     });
                 } catch (IOException e) {
@@ -112,7 +115,10 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     messages.add(new Message(inMes, username + ':'));
+                                    // Display message
                                     adapter.notifyItemInserted(messages.size());
+                                    // Scroll down
+                                    recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
                                 }
                             });
                         }
