@@ -5,6 +5,10 @@ public class Message {
     String textMessage;
     String senderUsername;
 
+    Message (String textMessage, String username) {
+        this.textMessage = textMessage;
+        this.senderUsername = username;
+    }
     public String getDateTime() {
         return dateTime;
     }
