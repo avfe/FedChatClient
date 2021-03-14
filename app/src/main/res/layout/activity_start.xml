@@ -27,7 +27,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/start_port"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:maxLines="1"
+        android:lines="1"
+        android:singleLine="true"/>
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/start_port"
@@ -37,7 +40,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/start_ip"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:maxLines="1"
+        android:lines="1"
+        android:singleLine="true"/>
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/start_name"
@@ -49,6 +55,9 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.384" />
+        app:layout_constraintVertical_bias="0.384"
+        android:maxLines="1"
+        android:lines="1"
+        android:singleLine="true"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
