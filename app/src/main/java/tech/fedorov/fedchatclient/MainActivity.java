@@ -92,14 +92,13 @@ public class MainActivity extends AppCompatActivity {
                         String message = String.valueOf(userMessage.getText());
                         userMessage.setText("");
                         // Send it to the server
-                        String finalMessage = message;
+                        String finalMessage = username + ":" + message;
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 outMessage.println(finalMessage);
                             }
                         }).start();
-
                     }
                 });
 
@@ -110,11 +109,20 @@ public class MainActivity extends AppCompatActivity {
                         if (inMessage.hasNext()) {
                             // Read it
                             String inMes = inMessage.nextLine();
+                            String usrnm, txt;
+                            if (inMes.indexOf(":") != -1) {
+                                String[] msgLines = inMes.split(":");
+                                usrnm = msgLines[0];
+                                txt = msgLines[1];
+                            } else {
+                                usrnm = username;
+                                txt = inMes;
+                            }
                             // Display it
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    messages.add(new Message(inMes, username + ':'));
+                                    messages.add(new Message(txt, usrnm + ':'));
                                     // Display message
                                     adapter.notifyItemInserted(messages.size());
                                     // Scroll down
