@@ -70,6 +70,13 @@ public class MainActivity extends AppCompatActivity {
                     outMessage =
                             new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream())),
                                     true);
+                    String finalMessage = username + ":" + "I have entered the chat!";
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            outMessage.println(finalMessage);
+                        }
+                    }).start();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
