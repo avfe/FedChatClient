@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        messages.add(new Message("to server...", "Connecting"));
+        messages.add(new Message("Connecting to server...", "INFO"));
         // Getting data from StartActivity
         Bundle arguments = getIntent().getExtras();
         String username = arguments.get("name").toString();

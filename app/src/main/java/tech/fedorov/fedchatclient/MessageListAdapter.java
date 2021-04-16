@@ -25,7 +25,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.message_item, parent, false);
+        View view = mInflater.inflate(R.layout.message_item_cardview, parent, false);
         return new ViewHolder(view);
     }
 
