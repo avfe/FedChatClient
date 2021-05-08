@@ -1,4 +1,4 @@
-package tech.fedorov.fedchatclient;
+package tech.fedorov.fedchatclient.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,14 +10,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import tech.fedorov.fedchatclient.Messages.Message;
+import tech.fedorov.fedchatclient.R;
+
 
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.ViewHolder>{
     private ArrayList<Message> mData;
 
     private LayoutInflater mInflater;
+    // когда пролистываю адаптер - хочу расшифровать сообщение либо у меня массив расшифровывается
+    // целиком и потом я с ним работаю
 
     // data is passed into the constructor
-    MessageListAdapter(Context context, ArrayList<Message> data) {
+    public MessageListAdapter(Context context, ArrayList<Message> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
