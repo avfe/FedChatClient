@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         sendButton = (Button) findViewById(R.id.send_button);
         userMessage = (TextInputEditText) findViewById(R.id.user_message);
 
+        /*
+        Здесь будет реализация handler
         handler = new Handler() {
             @Override
             public void handleMessage(@NonNull android.os.Message msg) {
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
             }
         };
+         */
 
         // Connecting to the server
         clientConnection = new ClientConnection(username);
@@ -170,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                                 messages.add(new Message(txt, usrnm + ':'));
                                 // Display message
                                 adapter.notifyItemInserted(messages.size());
+                                adapter.notifyDataSetChanged();
                                 // Scroll down
                                 recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
                             }
