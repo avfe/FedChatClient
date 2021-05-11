@@ -4,7 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_grey">
+
+    <include
+        android:id="@+id/toolbar_start_activity"
+        layout="@layout/toolbar_start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button_connect"
@@ -24,6 +32,8 @@
         android:layout_width="218dp"
         android:layout_height="55dp"
         android:hint="IP adress"
+        android:textColor="@color/text_white"
+        android:textColorHint="@color/hint_grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/start_port"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,6 +47,8 @@
         android:layout_width="96dp"
         android:layout_height="55dp"
         android:hint="Port"
+        android:textColor="@color/text_white"
+        android:textColorHint="@color/hint_grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/start_ip"
@@ -50,6 +62,8 @@
         android:layout_width="224dp"
         android:layout_height="42dp"
         android:hint="Your name"
+        android:textColor="@color/text_white"
+        android:textColorHint="@color/hint_grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"

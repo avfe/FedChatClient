@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         // проверь есть ли массив сообщений
         // или обратись к базе данных (DBManager)
         messages.add(new Message("Connecting to server...", "INFO"));
