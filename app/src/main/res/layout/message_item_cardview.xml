@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            app:cardBackgroundColor="@color/grey"
+            app:cardBackgroundColor="@color/background_message_grey"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -43,10 +43,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:text=""
-                    android:textColor="@color/text_white"
+                    android:textColor="@color/username"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toTopOf="@+id/message"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -59,8 +59,8 @@
                     android:id="@+id/message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="10dp"
                     android:maxWidth="300sp"
                     android:layout_gravity="left"
                     android:text=""
@@ -70,6 +70,20 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/username" />
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text=""
+                    android:textColor="@color/text_white"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/username"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,8 +9,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#4c4c4c</color>
     <color name="background_grey">#303030</color>
+    <color name="background_message_grey">#222222</color>
     <color name="text_white">#e5e5e5</color>
     <color name="toolbar_black">#191919</color>
     <color name="hint_grey">#4e4e4e</color>
     <color name="sendbutton_white">#b7b7b7</color>
+    <color name="username">#A6A6A6</color>
+    <color name="background_black">#090909</color>
 </resources>

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton sendButton;
     ImageButton attachButton;
     TextView newChatButton;
-    TextInputEditText userMessage;
+    EditText userMessage;
     Handler handler;
 
     /*
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         newChatButton = (TextView) findViewById(R.id.newChatButton);
         attachButton = (ImageButton) findViewById(R.id.attach_button);
         sendButton = (ImageButton) findViewById(R.id.send_button);
-        userMessage = (TextInputEditText) findViewById(R.id.user_message);
+        userMessage = (EditText) findViewById(R.id.user_message);
 
         Intent startIntent = new Intent(this, StartActivity.class);
 
@@ -196,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                messages.add(new Message(txt, usrnm + ':'));
+                                messages.add(new Message(txt, usrnm));
                                 // Display message
                                 adapter.notifyItemInserted(messages.size());
                                 adapter.notifyDataSetChanged();

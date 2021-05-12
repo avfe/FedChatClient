@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@color/background_grey">
+    android:background="@color/background_black">
 
     <include
         android:id="@+id/toolbar_main_activity"
@@ -14,17 +14,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/user_message"
-        android:layout_width="282dp"
+    <View
+        android:id="@+id/myRectangleView"
+        android:layout_width="0dp"
         android:layout_height="58dp"
-        android:layout_marginEnd="6dp"
+        android:background="@color/toolbar_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/user_message"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@null"
         android:hint="Write a message..."
         android:textColor="@color/text_white"
         android:textColorHint="@color/hint_grey"
-
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/send_button" />
+        app:layout_constraintEnd_toStartOf="@+id/send_button"
+        app:layout_constraintStart_toEndOf="@+id/attach_button" />
 
     <ImageButton
         android:id="@+id/send_button"
@@ -37,14 +46,14 @@
         app:srcCompat="@drawable/ic_baseline_send_24"
         tools:ignore="MissingConstraints" />
 
+
     <ImageButton
         android:id="@+id/attach_button"
-        android:layout_width="48dp"
-        android:layout_height="57dp"
+        android:layout_width="51dp"
+        android:layout_height="56dp"
         android:background="@android:color/transparent"
         android:tint="@color/sendbutton_white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/user_message"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_baseline_attach_file_24"
         tools:ignore="MissingConstraints" />
@@ -54,7 +63,7 @@
         android:id="@+id/MessageList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/user_message"
+        app:layout_constraintBottom_toTopOf="@+id/myRectangleView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
