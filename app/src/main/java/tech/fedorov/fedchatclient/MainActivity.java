@@ -1,15 +1,17 @@
 package tech.fedorov.fedchatclient;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     String server_ip;
     String server_port;
     ImageButton sendButton;
+    ImageButton attachButton;
+    TextView newChatButton;
     TextInputEditText userMessage;
     Handler handler;
 
@@ -64,9 +68,27 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         // Getting IDs
+        newChatButton = (TextView) findViewById(R.id.newChatButton);
+        attachButton = (ImageButton) findViewById(R.id.attach_button);
         sendButton = (ImageButton) findViewById(R.id.send_button);
         userMessage = (TextInputEditText) findViewById(R.id.user_message);
 
+        Intent startIntent = new Intent(this, StartActivity.class);
+
+        newChatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(startIntent);
+            }
+        });
+
+        attachButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Coming soon...",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
         /*
         Здесь будет реализация handler
         handler = new Handler() {
