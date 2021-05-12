@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     String server_ip;
     String server_port;
-    Button sendButton;
+    ImageButton sendButton;
     TextInputEditText userMessage;
     Handler handler;
 
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         // Getting IDs
-        sendButton = (Button) findViewById(R.id.send_button);
+        sendButton = (ImageButton) findViewById(R.id.send_button);
         userMessage = (TextInputEditText) findViewById(R.id.user_message);
 
         /*
