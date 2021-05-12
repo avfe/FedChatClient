@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         // проверь есть ли массив сообщений
         // или обратись к базе данных (DBManager)
-        messages.add(new Message("Connecting to server...", "INFO"));
+        Toast.makeText(this, "Connecting to server...", Toast.LENGTH_LONG).show();
         // Getting data from StartActivity
         Bundle arguments = getIntent().getExtras();
         String username = arguments.get("name").toString();
@@ -145,11 +145,13 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        messages.add(new Message("Сonnection established!", "SERVER:"));
+                        Toast.makeText(MainActivity.this, "Connection established!",
+                                Toast.LENGTH_LONG).show();
+                        //messages.add(new Message("Сonnection established!", "SERVER:"));
                         // Display message
-                        adapter.notifyItemInserted(messages.size());
+                        //adapter.notifyItemInserted(messages.size());
                         // Scroll down
-                        recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                        //recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
                     }
                 });
             } catch (IOException e) {
