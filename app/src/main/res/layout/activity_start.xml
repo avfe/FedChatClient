@@ -46,8 +46,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/start_ip"
-                android:layout_width="218dp"
-                android:layout_height="55dp"
+                android:layout_width="155dp"
+                android:layout_height="53dp"
                 android:layout_marginStart="8dp"
                 android:gravity="center"
                 android:hint="IP adress"
@@ -63,10 +63,11 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/start_port"
-                android:layout_width="96dp"
-                android:layout_height="55dp"
+                android:layout_width="155dp"
+                android:layout_height="53dp"
                 android:layout_marginEnd="8dp"
                 android:hint="Port"
+                android:gravity="center"
                 android:lines="1"
                 android:maxLines="1"
                 android:singleLine="true"

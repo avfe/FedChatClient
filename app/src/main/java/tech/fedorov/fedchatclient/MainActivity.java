@@ -40,13 +40,13 @@ public class MainActivity extends AppCompatActivity {
     EditText userMessage;
     Handler handler;
 
-    /*
-        Проверяем наличие базы
-        Проверяем ключи
-        Создаем RecyclerView
-        Соединяемся с сервером (анимируем)
-        Если активность умерла - соединение с сервером обрываем
-    */
+    /**
+     *   Проверяем наличие базы
+     *   Проверяем ключи
+     *   Создаем RecyclerView
+     *   Соединяемся с сервером (анимируем)
+     *   Если активность умерла - соединение с сервером обрываем
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
