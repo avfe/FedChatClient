@@ -15,5 +15,6 @@
     <color name="hint_grey">#4e4e4e</color>
     <color name="sendbutton_white">#b7b7b7</color>
     <color name="username">#A6A6A6</color>
+    <color name="server_name">#A6A6A6</color>
     <color name="background_black">#090909</color>
 </resources>

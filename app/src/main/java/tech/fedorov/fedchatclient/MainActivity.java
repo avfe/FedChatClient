@@ -1,5 +1,6 @@
 package tech.fedorov.fedchatclient;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -52,7 +54,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        if (savedInstanceState != null && savedInstanceState.containsKey("messages")) {
+            messages = (ArrayList<Message>) savedInstanceState.getSerializable("messages");
+        }
         // проверь есть ли массив сообщений
         // или обратись к базе данных (DBManager)
         Toast.makeText(this, "Connecting to server...", Toast.LENGTH_LONG).show();
@@ -167,14 +171,16 @@ public class MainActivity extends AppCompatActivity {
                     String message = String.valueOf(userMessage.getText());
                     userMessage.setText("");
                     // Send it to the server
-                    String finalMessage = username + ":" + message;
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // publickey:шифрованное сообщение
-                            outMessage.println(finalMessage);
-                        }
-                    }).start();
+                    if (!message.equals("")) {
+                        String finalMessage = username + ":" + message;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // publickey:шифрованное сообщение
+                                outMessage.println(finalMessage);
+                            }
+                        }).start();
+                    }
                 }
             });
             try {
@@ -182,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 while (!isInterrupted()) {
                     // If there is an incoming message
                     if (inMessage.hasNext()) {
+                        Log.d("InMes", "i am not dead");
                         // Read it
                         String inMes = inMessage.nextLine();
                         String usrnm, txt;
@@ -193,13 +200,13 @@ public class MainActivity extends AppCompatActivity {
                             usrnm = username;
                             txt = inMes;
                         }
+                        
                         // Display it
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 messages.add(new Message(txt, usrnm));
                                 // Display message
-                                adapter.notifyItemInserted(messages.size());
                                 adapter.notifyDataSetChanged();
                                 // Scroll down
                                 recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -207,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 }
+                Log.d("InMes", "i close thread");
                 outMessage.flush();
                 outMessage.close();
                 inMessage.close();
@@ -216,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } catch (Exception e) {
+                Log.d("InMes", "i am dead");
                 e.printStackTrace();
             }
         }
@@ -226,5 +235,11 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         // соединение с сервером обрываем
         clientConnection.interrupt();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("messages", messages);
     }
 }
