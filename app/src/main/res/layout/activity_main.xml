@@ -43,8 +43,7 @@
         android:tint="@color/sendbutton_white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_send_24"
-        tools:ignore="MissingConstraints" />
+        app:srcCompat="@drawable/ic_baseline_send_24" />
 
 
     <ImageButton

@@ -10,12 +10,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-public class StartActivity extends AppCompatActivity {
+import java.util.ArrayList;
 
+import tech.fedorov.fedchatclient.Servers.Server;
+
+public class StartActivity extends AppCompatActivity {
+    private ArrayList<Server> servers;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        Bundle arguments = getIntent().getExtras();
+        servers = (ArrayList<Server>) arguments.get("servers");
 
         // Getting data from input fields
         TextInputEditText inputName = (TextInputEditText) findViewById(R.id.start_name);
@@ -23,11 +29,11 @@ public class StartActivity extends AppCompatActivity {
         TextInputEditText inputPort = (TextInputEditText) findViewById(R.id.start_port);
 
         // Create MainActivity intent
-        Intent mainIntent = new Intent(this, MainActivity.class);
+        Intent serverListIntent = new Intent(this, ServerListActivity.class);
 
         // Transfer data to MainActivity
-        Button btnConnect = (Button) findViewById(R.id.button_connect);
-        btnConnect.setOnClickListener(new View.OnClickListener() {
+        Button saveButton = (Button) findViewById(R.id.save_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String name = String.valueOf(inputName.getText());
@@ -35,10 +41,9 @@ public class StartActivity extends AppCompatActivity {
                 String port = String.valueOf(inputPort.getText());
                 if (validate(name,ip,port)) {
                     // Transfer Strings to MainActivity
-                    mainIntent.putExtra("name", name);
-                    mainIntent.putExtra("ip", ip);
-                    mainIntent.putExtra("port", port);
-                    startActivity(mainIntent);
+                    servers.add(new Server(name, ip, port));
+                    serverListIntent.putExtra("servers", servers);
+                    startActivity(serverListIntent);
                 } else {
                     Toast.makeText(getApplicationContext(), "ERROR! Check input fields!", Toast.LENGTH_SHORT).show();
                 }

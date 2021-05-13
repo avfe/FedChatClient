@@ -12,11 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
-
-import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -38,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     String server_port;
     ImageButton sendButton;
     ImageButton attachButton;
-    TextView newChatButton;
+    ImageButton goBackButton;
     EditText userMessage;
     Handler handler;
 
@@ -73,17 +69,17 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         // Getting IDs
-        newChatButton = (TextView) findViewById(R.id.newChatButton);
+        goBackButton = (ImageButton) findViewById(R.id.goBackButton);
         attachButton = (ImageButton) findViewById(R.id.attach_button);
         sendButton = (ImageButton) findViewById(R.id.send_button);
         userMessage = (EditText) findViewById(R.id.user_message);
 
-        Intent startIntent = new Intent(this, StartActivity.class);
+        // Intent serverListIntent = new Intent(this, ServerListActivity.class);
 
-        newChatButton.setOnClickListener(new View.OnClickListener() {
+        goBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(startIntent);
+                finish();
             }
         });
 
@@ -200,7 +196,9 @@ public class MainActivity extends AppCompatActivity {
                             usrnm = username;
                             txt = inMes;
                         }
-                        
+                        if (usrnm.equals(username) && txt.equals("I have entered the chat!")) {
+                            continue;
+                        }
                         // Display it
                         runOnUiThread(new Runnable() {
                             @Override

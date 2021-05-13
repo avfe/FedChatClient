@@ -1,6 +1,8 @@
 package tech.fedorov.fedchatclient.Servers;
 
-public class Server {
+import java.io.Serializable;
+
+public class Server implements Serializable {
     private String IP;
     private String PORT;
     private String name;

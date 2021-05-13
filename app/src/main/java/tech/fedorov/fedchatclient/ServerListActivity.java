@@ -22,12 +22,22 @@ public class ServerListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<Server> servers;
     private TextView newChatButton;
+    private TextView emptyListAlert;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serverslist);
+        Bundle arguments = getIntent().getExtras();
         servers = new ArrayList<>();
-        servers.add(new Server("Name", "10.100.200.9", "60606"));
+        if (arguments != null && arguments.containsKey("servers")) {
+            this.servers = (ArrayList<Server>) arguments.get("servers");
+        }
+        emptyListAlert = (TextView) findViewById(R.id.emptyListAlert);
+        if (servers.size() == 0) {
+            emptyListAlert.setVisibility(View.VISIBLE);
+        } else {
+            emptyListAlert.setVisibility(View.INVISIBLE);
+        }
         // проверяем в файлах, есть ли сервера.
         // set up the RecyclerView
         recyclerView = findViewById(R.id.ServerList);
@@ -40,6 +50,7 @@ public class ServerListActivity extends AppCompatActivity {
         newChatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startIntent.putExtra("servers", servers);
                 startActivity(startIntent);
             }
         });

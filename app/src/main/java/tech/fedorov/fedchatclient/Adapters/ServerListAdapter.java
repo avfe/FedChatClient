@@ -1,6 +1,7 @@
 package tech.fedorov.fedchatclient.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,19 +16,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import tech.fedorov.fedchatclient.MainActivity;
 import tech.fedorov.fedchatclient.R;
 import tech.fedorov.fedchatclient.ServerListActivity;
 import tech.fedorov.fedchatclient.Servers.Server;
+import tech.fedorov.fedchatclient.StartActivity;
 
 public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.ViewHolder>{
     private ArrayList<Server> mData;
-
+    private ServerListAdapter adapterContext = ServerListAdapter.this;
     private LayoutInflater mInflater;
+    private Context activityContext;
 
     // data is passed into the constructor
     public ServerListAdapter(Context context, ArrayList<Server> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
+        this.activityContext = context;
     }
 
     // inflates the row layout from xml when needed
@@ -45,18 +50,21 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Vi
         String name = serv.getName();
         holder.serverAddress.setText(adress);
         holder.serverName.setText(name);
-        ServerListAdapter context = ServerListAdapter.this;
         holder.removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mData.remove(position);
-                context.notifyDataSetChanged();
+                adapterContext.notifyDataSetChanged();
             }
         });
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // переход в чат с указанными настройками
+                Intent intent = new Intent(activityContext, MainActivity.class);
+                intent.putExtra("name", serv.getName());
+                intent.putExtra("ip", serv.getIP());
+                intent.putExtra("port", serv.getPORT());
+                activityContext.startActivity(intent);
             }
         });
     }
