@@ -12,7 +12,7 @@ import java.io.ObjectOutputStream;
 public class FileHandler {
     private Context context;
 
-    FileHandler(Context context) {
+    public FileHandler(Context context) {
         this.context = context;
     }
 
@@ -45,7 +45,7 @@ public class FileHandler {
 
     }
 
-    public Object readObjectFromPrivateFile(String filename) {
+    public  Object readObjectFromPrivateFile(String filename) {
         FileInputStream flis = null;
         try {
             flis = context.openFileInput(filename);
@@ -67,5 +67,14 @@ public class FileHandler {
             e.printStackTrace();
         }
         return object;
+    }
+
+    public static boolean findInArray(String str, String[] strs) {
+        for (int i = 0; i < strs.length; i++) {
+            if (str.equals(strs[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 }

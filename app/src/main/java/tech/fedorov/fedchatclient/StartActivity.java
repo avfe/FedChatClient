@@ -12,17 +12,19 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 
+import tech.fedorov.fedchatclient.Memory.FileHandler;
 import tech.fedorov.fedchatclient.Servers.Server;
 
 public class StartActivity extends AppCompatActivity {
     private ArrayList<Server> servers;
+    private FileHandler fileHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         Bundle arguments = getIntent().getExtras();
         servers = (ArrayList<Server>) arguments.get("servers");
-
+        fileHandler = new FileHandler(this);
         // Getting data from input fields
         TextInputEditText inputName = (TextInputEditText) findViewById(R.id.start_name);
         TextInputEditText inputIP = (TextInputEditText) findViewById(R.id.start_ip);
@@ -42,7 +44,7 @@ public class StartActivity extends AppCompatActivity {
                 if (validate(name,ip,port)) {
                     // Transfer Strings to MainActivity
                     servers.add(new Server(name, ip, port));
-                    serverListIntent.putExtra("servers", servers);
+                    fileHandler.writeObjectToPrivateFile("servers", servers);
                     startActivity(serverListIntent);
                 } else {
                     Toast.makeText(getApplicationContext(), "ERROR! Check input fields!", Toast.LENGTH_SHORT).show();

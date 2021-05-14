@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tech.fedorov.fedchatclient.MainActivity;
+import tech.fedorov.fedchatclient.Memory.FileHandler;
 import tech.fedorov.fedchatclient.R;
 import tech.fedorov.fedchatclient.ServerListActivity;
 import tech.fedorov.fedchatclient.Servers.Server;
@@ -27,12 +28,14 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Vi
     private ServerListAdapter adapterContext = ServerListAdapter.this;
     private LayoutInflater mInflater;
     private Context activityContext;
+    private FileHandler fileHandler;
 
     // data is passed into the constructor
     public ServerListAdapter(Context context, ArrayList<Server> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.activityContext = context;
+        fileHandler = new FileHandler(context);
     }
 
     // inflates the row layout from xml when needed
@@ -54,6 +57,7 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Vi
             @Override
             public void onClick(View v) {
                 mData.remove(position);
+                fileHandler.writeObjectToPrivateFile("servers", mData);
                 adapterContext.notifyDataSetChanged();
             }
         });

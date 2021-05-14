@@ -11,10 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import tech.fedorov.fedchatclient.Adapters.MessageListAdapter;
 import tech.fedorov.fedchatclient.Adapters.ServerListAdapter;
+import tech.fedorov.fedchatclient.Memory.FileHandler;
 import tech.fedorov.fedchatclient.Servers.Server;
 
 public class ServerListActivity extends AppCompatActivity {
@@ -23,22 +22,26 @@ public class ServerListActivity extends AppCompatActivity {
     private ArrayList<Server> servers;
     private TextView newChatButton;
     private TextView emptyListAlert;
+    private FileHandler fileHandler;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serverslist);
-        Bundle arguments = getIntent().getExtras();
         servers = new ArrayList<>();
-        if (arguments != null && arguments.containsKey("servers")) {
-            this.servers = (ArrayList<Server>) arguments.get("servers");
+        // Find list of servers in private files
+        fileHandler = new FileHandler(this);
+        String[] files = getApplicationContext().fileList();
+        if (FileHandler.findInArray("servers", files)) {
+            servers = (ArrayList<Server>) fileHandler.readObjectFromPrivateFile("servers");
         }
+
         emptyListAlert = (TextView) findViewById(R.id.emptyListAlert);
         if (servers.size() == 0) {
             emptyListAlert.setVisibility(View.VISIBLE);
         } else {
             emptyListAlert.setVisibility(View.INVISIBLE);
         }
-        // проверяем в файлах, есть ли сервера.
+
         // set up the RecyclerView
         recyclerView = findViewById(R.id.ServerList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
