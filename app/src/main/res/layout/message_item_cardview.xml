@@ -48,6 +48,8 @@
                     android:textColor="@color/username"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toTopOf="@+id/message"
+                    app:layout_constraintEnd_toEndOf="@+id/time"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/message"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="1.0" />
