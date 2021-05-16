@@ -17,4 +17,5 @@
     <color name="username">#A6A6A6</color>
     <color name="server_name">#A6A6A6</color>
     <color name="background_black">#090909</color>
+    <color name="link_color">#2a5891</color>
 </resources>

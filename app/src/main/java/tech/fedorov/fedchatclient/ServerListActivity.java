@@ -2,8 +2,10 @@ package tech.fedorov.fedchatclient;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 
 import tech.fedorov.fedchatclient.Adapters.ServerListAdapter;
 import tech.fedorov.fedchatclient.Memory.FileHandler;
+import tech.fedorov.fedchatclient.Messages.Message;
 import tech.fedorov.fedchatclient.Servers.Server;
 
 public class ServerListActivity extends AppCompatActivity {
