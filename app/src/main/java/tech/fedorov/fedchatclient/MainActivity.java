@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     ImageButton goBackButton;
     EditText userMessage;
     Handler handler;
+    String username;
+    Bundle arguments;
 
     /**
      *   Проверяем наличие базы
@@ -57,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
         // или обратись к базе данных (DBManager)
         Toast.makeText(this, "Connecting to server...", Toast.LENGTH_LONG).show();
         // Getting data from StartActivity
-        Bundle arguments = getIntent().getExtras();
-        String username = arguments.get("name").toString();
+        arguments = getIntent().getExtras();
+        username = arguments.get("name").toString();
         server_ip = arguments.get("ip").toString();
         server_port = arguments.get("port").toString();
 
@@ -233,6 +235,16 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         // соединение с сервером обрываем
         clientConnection.interrupt();
+        clientConnection = null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (clientConnection == null) {
+            clientConnection = new ClientConnection(username);
+            clientConnection.start();
+        }
     }
 
     @Override
