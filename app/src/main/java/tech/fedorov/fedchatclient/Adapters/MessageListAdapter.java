@@ -40,8 +40,10 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         Message msg = mData.get(position);
         String text = msg.getTextMessage();
         String name = msg.getSenderUsername();
+        String dataTime = msg.getDateTime();
         holder.messageText.setText(text);
         holder.username.setText(name);
+        holder.dataTime.setText(dataTime);
     }
 
     // total number of rows
@@ -54,11 +56,12 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView messageText;
         TextView username;
-
+        TextView dataTime;
         ViewHolder(View itemView) {
             super(itemView);
             messageText = itemView.findViewById(R.id.message);
             username = itemView.findViewById(R.id.username);
+            dataTime = itemView.findViewById(R.id.time);
         }
     }
 }

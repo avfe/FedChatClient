@@ -16,6 +16,13 @@ public class Message implements Serializable {
         this.textMessage = textMessage;
         this.senderUsername = username;
     }
+
+    public Message(String textMessage, String username, String dateTime) {
+        this.textMessage = textMessage;
+        this.senderUsername = username;
+        this.dateTime = dateTime;
+    }
+
     public String getDateTime() {
         return dateTime;
     }

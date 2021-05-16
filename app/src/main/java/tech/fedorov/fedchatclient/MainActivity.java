@@ -1,11 +1,5 @@
 package tech.fedorov.fedchatclient;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,12 +8,19 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 
 import tech.fedorov.fedchatclient.Adapters.MessageListAdapter;
@@ -201,11 +202,13 @@ public class MainActivity extends AppCompatActivity {
                         if (usrnm.equals(username) && txt.equals("I have entered the chat!")) {
                             continue;
                         }
+                        Date currentTime = Calendar.getInstance().getTime();
+                        String hourMinute = currentTime.getHours() + ":" + currentTime.getMinutes();
                         // Display it
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                messages.add(new Message(txt, usrnm));
+                                messages.add(new Message(txt, usrnm, hourMinute));
                                 // Display message
                                 adapter.notifyDataSetChanged();
                                 // Scroll down
