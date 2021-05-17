@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,7 +42,10 @@ public class MainActivity extends AppCompatActivity {
     Handler handler;
     String username;
     Bundle arguments;
-
+    TextView dotsConnecting;
+    ImageView isConnected;
+    ImageView connectionFailed;
+    Thread connectAnimation;
     /**
      *   Проверяем наличие базы
      *   Проверяем ключи
@@ -58,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         }
         // проверь есть ли массив сообщений
         // или обратись к базе данных (DBManager)
-        Toast.makeText(this, "Connecting to server...", Toast.LENGTH_LONG).show();
+        // Toast.makeText(this, "Connecting to server...", Toast.LENGTH_LONG).show();
         // Getting data from StartActivity
         arguments = getIntent().getExtras();
         username = arguments.get("name").toString();
@@ -76,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
         attachButton = (ImageButton) findViewById(R.id.attach_button);
         sendButton = (ImageButton) findViewById(R.id.send_button);
         userMessage = (EditText) findViewById(R.id.user_message);
+        dotsConnecting = (TextView) findViewById(R.id.dots_connecting);
+        isConnected = (ImageView) findViewById(R.id.connected);
+        connectionFailed = (ImageView) findViewById(R.id.connection_failed);
 
         // Intent serverListIntent = new Intent(this, ServerListActivity.class);
 
@@ -108,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
         };
          */
 
+        startConnectAnimation();
+
         // Connecting to the server
         clientConnection = new ClientConnection(username);
         clientConnection.start();
@@ -135,6 +145,16 @@ public class MainActivity extends AppCompatActivity {
             try {
                 // Connecting to the server
                 clientSocket = new Socket(server_ip, Integer.parseInt(server_port));
+                if (clientSocket.isConnected()) {
+                    connectAnimation.interrupt();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dotsConnecting.setVisibility(View.INVISIBLE);
+                            isConnected.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
                 inMessage = new Scanner(clientSocket.getInputStream());
                 outMessage =
                         new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream())),
@@ -146,18 +166,6 @@ public class MainActivity extends AppCompatActivity {
                         outMessage.println(finalMessage);
                     }
                 }).start();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "Connection established!",
-                                Toast.LENGTH_LONG).show();
-                        //messages.add(new Message("Сonnection established!", "SERVER:"));
-                        // Display message
-                        //adapter.notifyItemInserted(messages.size());
-                        // Scroll down
-                        //recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-                    }
-                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -203,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                             continue;
                         }
                         Date currentTime = Calendar.getInstance().getTime();
-                        String hourMinute = currentTime.getHours() + ":" + currentTime.getMinutes();
+                        String hourMinute = getHourMinute(currentTime);
                         // Display it
                         runOnUiThread(new Runnable() {
                             @Override
@@ -233,18 +241,100 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void startConnectAnimation() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                connectionFailed.setVisibility(View.INVISIBLE);
+                dotsConnecting.setVisibility(View.VISIBLE);
+            }
+        });
+        connectAnimation = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int interation = 0;
+                try {
+                    while (!Thread.interrupted()) {
+                        if (interation == 5) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dotsConnecting.setVisibility(View.INVISIBLE);
+                                    connectionFailed.setVisibility(View.VISIBLE);
+                                    Toast.makeText(getApplicationContext(),
+                                            "Connection failed.\nPlease, try later.",
+                                            Toast.LENGTH_SHORT).show();
+                                    connectionFailed.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Server is not available.\nPlease, try later.",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            });
+                            break;
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dotsConnecting.setText("·");
+                            }
+                        });
+                        Thread.sleep(500);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dotsConnecting.setText("··");
+                            }
+                        });
+                        Thread.sleep(500);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dotsConnecting.setText("···");
+                            }
+                        });
+                        Thread.sleep(500);
+                        interation++;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        connectAnimation.start();
+    }
+
+    private String getHourMinute(Date currentTime) {
+        String hour = String.valueOf(currentTime.getHours());
+        String minute = String.valueOf(currentTime.getMinutes());
+        if (Integer.parseInt(hour) < 10) {
+            hour = "0" + hour;
+        }
+        if (Integer.parseInt(minute) < 10) {
+            minute = "0" + minute;
+        }
+        String hourMinute = hour + ":" + minute;
+        return hourMinute;
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
         // соединение с сервером обрываем
         clientConnection.interrupt();
         clientConnection = null;
+        connectAnimation.interrupt();
+        connectAnimation = null;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (clientConnection == null) {
+            startConnectAnimation();
             clientConnection = new ClientConnection(username);
             clientConnection.start();
         }
