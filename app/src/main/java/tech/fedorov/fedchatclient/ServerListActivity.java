@@ -61,4 +61,16 @@ public class ServerListActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fileHandler = new FileHandler(this);
+        String[] files = getApplicationContext().fileList();
+        if (FileHandler.findInArray("servers", files)) {
+            servers = (ArrayList<Server>) fileHandler.readObjectFromPrivateFile("servers");
+            adapter = new ServerListAdapter(this, servers);
+            recyclerView.setAdapter(adapter);
+        }
+    }
 }

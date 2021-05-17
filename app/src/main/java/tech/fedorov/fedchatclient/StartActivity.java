@@ -46,7 +46,7 @@ public class StartActivity extends AppCompatActivity {
                     // Transfer Strings to MainActivity
                     servers.add(new Server(name, ip, port));
                     fileHandler.writeObjectToPrivateFile("servers", servers);
-                    startActivity(serverListIntent);
+                    finish();
                 } else {
                     Toast.makeText(getApplicationContext(), "ERROR! Check input fields!", Toast.LENGTH_SHORT).show();
                 }
