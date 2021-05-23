@@ -42,34 +42,48 @@ public class StartActivity extends AppCompatActivity {
                 String name = String.valueOf(inputName.getText());
                 String ip = String.valueOf(inputIP.getText());
                 String port = String.valueOf(inputPort.getText());
-                if (validate(name,ip,port)) {
+                byte validateCode = validate(name, ip, port);
+                if (validateCode == 0) {
                     // Transfer Strings to MainActivity
                     servers.add(new Server(name, ip, port));
                     fileHandler.writeObjectToPrivateFile("servers", servers);
                     finish();
+                } else if (validateCode == 1) {
+                    Toast.makeText(getApplicationContext(), "ERROR!\nCheck name input field!\nMaximum name length is 50 characters.", Toast.LENGTH_LONG).show();
+                } else if (validateCode == 2) {
+                    Toast.makeText(getApplicationContext(), "ERROR!\nCheck ip input field!", Toast.LENGTH_SHORT).show();
+                } else if (validateCode == 3) {
+                    Toast.makeText(getApplicationContext(), "ERROR!\nCheck port input field!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "ERROR! Check input fields!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "An unexpected error, what did you do?!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private boolean validate(String name, String ip, String port) {
+
+    /**
+     * 0 - success code
+     * 1 - name length error code
+     * 2 - ip format error
+     * 3 - port format error
+     */
+    private byte validate(String name, String ip, String port) {
         if (name.length() > 50 || name.length() == 0) {
-            return false;
+            return 1;
         }
         if (!isValidIP(ip)) {
-            return false;
+            return 2;
         }
         try {
             int valPort = Integer.parseInt(port);
         } catch (Exception e) {
-            return false;
+            return 3;
         }
         if (Integer.parseInt(port) < 0 || Integer.parseInt(port) > 65535) {
-            return false;
+            return 3;
         }
-        return true;
+        return 0;
     }
 
     private boolean isValidIP(String ip) {

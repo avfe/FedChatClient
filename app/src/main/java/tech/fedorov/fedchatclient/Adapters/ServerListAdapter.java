@@ -29,13 +29,15 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Vi
     private LayoutInflater mInflater;
     private Context activityContext;
     private FileHandler fileHandler;
+    private TextView emptyListAlert;
 
     // data is passed into the constructor
-    public ServerListAdapter(Context context, ArrayList<Server> data) {
+    public ServerListAdapter(Context context, ArrayList<Server> data, TextView emptyListAlert) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.activityContext = context;
         fileHandler = new FileHandler(context);
+        this.emptyListAlert = emptyListAlert;
     }
 
     // inflates the row layout from xml when needed
@@ -59,6 +61,11 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Vi
                 mData.remove(position);
                 fileHandler.writeObjectToPrivateFile("servers", mData);
                 adapterContext.notifyDataSetChanged();
+                if (mData.size() < 1) {
+                    emptyListAlert.setVisibility(View.VISIBLE);
+                } else {
+                    emptyListAlert.setVisibility(View.INVISIBLE);
+                }
             }
         });
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {

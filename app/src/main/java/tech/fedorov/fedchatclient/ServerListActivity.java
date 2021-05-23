@@ -48,7 +48,7 @@ public class ServerListActivity extends AppCompatActivity {
         // set up the RecyclerView
         recyclerView = findViewById(R.id.ServerList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ServerListAdapter(this, servers);
+        adapter = new ServerListAdapter(this, servers, emptyListAlert);
         recyclerView.setAdapter(adapter);
 
         Intent startIntent = new Intent(this, StartActivity.class);
@@ -69,8 +69,13 @@ public class ServerListActivity extends AppCompatActivity {
         String[] files = getApplicationContext().fileList();
         if (FileHandler.findInArray("servers", files)) {
             servers = (ArrayList<Server>) fileHandler.readObjectFromPrivateFile("servers");
-            adapter = new ServerListAdapter(this, servers);
+            adapter = new ServerListAdapter(this, servers, emptyListAlert);
             recyclerView.setAdapter(adapter);
+        }
+        if (servers.size() == 0) {
+            emptyListAlert.setVisibility(View.VISIBLE);
+        } else {
+            emptyListAlert.setVisibility(View.INVISIBLE);
         }
     }
 }
