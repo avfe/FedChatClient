@@ -3,10 +3,12 @@ package tech.fedorov.fedchatclient;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
         attachButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Coming soon...",
-                        Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Coming soon...",
+                //        Toast.LENGTH_SHORT).show();
             }
         });
         /*
@@ -190,6 +192,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            attachButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // getting Geolocation and send it
+                    //Toast.makeText(MainActivity.this, "Coming soon...",
+                    //        Toast.LENGTH_SHORT).show();
+                    showAttachMenu(v);
+                }
+            });
+
             try {
                 // Endless cycle
                 while (!isInterrupted()) {
@@ -318,6 +331,37 @@ public class MainActivity extends AppCompatActivity {
         }
         String hourMinute = hour + ":" + minute;
         return hourMinute;
+    }
+
+    private void showAttachMenu(View v) {
+        PopupMenu attachMenu = new PopupMenu(this, v);
+        attachMenu.inflate(R.menu.attach_menu);
+        attachMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.geolocation_item:
+                        Toast.makeText(getApplicationContext(),
+                                "Вы выбрали geolocation",
+                                Toast.LENGTH_SHORT).show();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+        attachMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
+            @Override
+            public void onDismiss(PopupMenu menu) {
+                Toast.makeText(getApplicationContext(), "onDismiss",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+        attachMenu.show();
+    }
+
+    private void showGeolocation() {
+
     }
 
     @Override
