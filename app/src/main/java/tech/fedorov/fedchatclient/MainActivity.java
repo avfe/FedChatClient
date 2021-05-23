@@ -63,9 +63,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null && savedInstanceState.containsKey("messages")) {
             messages = (ArrayList<Message>) savedInstanceState.getSerializable("messages");
         }
-        // проверь есть ли массив сообщений
-        // или обратись к базе данных (DBManager)
-        // Toast.makeText(this, "Connecting to server...", Toast.LENGTH_LONG).show();
+
         // Getting data from StartActivity
         arguments = getIntent().getExtras();
         username = arguments.get("name").toString();
@@ -87,36 +85,12 @@ public class MainActivity extends AppCompatActivity {
         isConnected = (ImageView) findViewById(R.id.connected);
         connectionFailed = (ImageView) findViewById(R.id.connection_failed);
 
-        // Intent serverListIntent = new Intent(this, ServerListActivity.class);
-
         goBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-
-        attachButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Toast.makeText(MainActivity.this, "Coming soon...",
-                //        Toast.LENGTH_SHORT).show();
-            }
-        });
-        /*
-        Здесь будет реализация handler
-        handler = new Handler() {
-            @Override
-            public void handleMessage(@NonNull android.os.Message msg) {
-                // messages.add(message);
-
-                // Display message
-                adapter.notifyItemInserted(messages.size());
-                // Scroll down
-                recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-            }
-        };
-         */
 
         startConnectAnimation();
 
