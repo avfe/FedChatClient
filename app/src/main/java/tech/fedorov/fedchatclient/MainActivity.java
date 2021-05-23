@@ -327,8 +327,7 @@ public class MainActivity extends AppCompatActivity {
         attachMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
             @Override
             public void onDismiss(PopupMenu menu) {
-                Toast.makeText(getApplicationContext(), "onDismiss",
-                        Toast.LENGTH_SHORT).show();
+
             }
         });
         attachMenu.show();
