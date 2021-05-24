@@ -160,7 +160,18 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 // publickey:шифрованное сообщение
-                                outMessage.println(finalMessage);
+                                try {
+                                    outMessage.println(finalMessage);
+                                } catch (Exception e) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(MainActivity.this, "Server is not available",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                    e.printStackTrace();
+                                }
                             }
                         }).start();
                     }
@@ -316,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.geolocation_item:
                         Toast.makeText(getApplicationContext(),
-                                "Вы выбрали geolocation",
+                                "To send geolocation, you need to buy a premium account.",
                                 Toast.LENGTH_SHORT).show();
                         return true;
                     default:
