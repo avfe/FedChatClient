@@ -1,50 +1,46 @@
 package tech.fedorov.fedchatclient.Messages;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 
-public class Message implements Serializable {
-    String dateTime;
-    String textMessage;
-    String senderUsername;
 
+public class Message {
+
+    @SerializedName("username")
+    @Expose
+    public String username;
+    @SerializedName("text")
+    @Expose
+    public String text;
+    @SerializedName("time")
+    @Expose
+    public String time;
+    @SerializedName("geo")
+    @Expose
+    public String geo;
+    // geo = "Lat:Lng"
     public Message(String textMessage, String username) {
-        this.textMessage = textMessage;
-        this.senderUsername = username;
+        this.text = textMessage;
+        this.username = username;
     }
 
     public Message(String textMessage, String username, String dateTime) {
-        this.textMessage = textMessage;
-        this.senderUsername = username;
-        this.dateTime = dateTime;
+        this.text = textMessage;
+        this.username = username;
+        this.time = dateTime;
     }
 
-    public String getDateTime() {
-        return dateTime;
-    }
-
-    public String getTextMessage() {
-        return textMessage;
-    }
-
-    public String getSenderUsername() {
-        return senderUsername;
-    }
-
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public void setTextMessage(String textMessage) {
-        this.textMessage = textMessage;
-    }
-
-    public void setSenderUsername(String senderUsername) {
-        this.senderUsername = senderUsername;
+    public Message(String textMessage, String username, String dateTime, String geo) {
+        this.text = textMessage;
+        this.username = username;
+        this.time = dateTime;
+        this.geo = geo;
     }
 
     public static byte[] serialize(Object obj) throws IOException {
@@ -64,3 +60,4 @@ public class Message implements Serializable {
         }
     }
 }
+

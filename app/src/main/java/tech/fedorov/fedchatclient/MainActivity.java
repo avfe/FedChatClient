@@ -17,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -33,7 +35,7 @@ import tech.fedorov.fedchatclient.Messages.Message;
 public class MainActivity extends AppCompatActivity {
     MessageListAdapter adapter;
     ArrayList<Message> messages = new ArrayList<>();
-    ClientConnection clientConnection;
+    public ClientConnection clientConnection;
     RecyclerView recyclerView;
     String server_ip;
     String server_port;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView isConnected;
     ImageView connectionFailed;
     Thread connectAnimation;
+    Gson gson;
     /**
      *   Проверяем наличие базы
      *   Проверяем ключи
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null && savedInstanceState.containsKey("messages")) {
             messages = (ArrayList<Message>) savedInstanceState.getSerializable("messages");
         }
-
+        gson = new Gson();
         // Getting data from StartActivity
         arguments = getIntent().getExtras();
         username = arguments.get("name").toString();
@@ -106,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         // Incoming message
         private Scanner inMessage;
         // Outgoing message
-        private PrintWriter outMessage;
+        public PrintWriter outMessage;
         // Get username
         public String getUsername() {
             return this.username;
@@ -135,11 +138,14 @@ public class MainActivity extends AppCompatActivity {
                 outMessage =
                         new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream())),
                                 true);
-                String finalMessage = username + ":" + "I have entered the chat!";
+                Date currentTime = Calendar.getInstance().getTime();
+                String hourMinute = getHourMinute(currentTime);
+                Message tmpMsg = new Message("I have entered the chat!", username, hourMinute);
+                String JSONMessage = gson.toJson(tmpMsg);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        outMessage.println(finalMessage);
+                        outMessage.println(JSONMessage);
                     }
                 }).start();
             } catch (IOException e) {
@@ -155,13 +161,17 @@ public class MainActivity extends AppCompatActivity {
                     userMessage.setText("");
                     // Send it to the server
                     if (!message.equals("")) {
-                        String finalMessage = username + ":" + message;
+                        Date currentTime = Calendar.getInstance().getTime();
+                        String hourMinute = getHourMinute(currentTime);
+                        Message tmpMsg = new Message(message, username, hourMinute);
+                        String JSONMessage = gson.toJson(tmpMsg);
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                // publickey:шифрованное сообщение
                                 try {
-                                    outMessage.println(finalMessage);
+                                    Log.i("INF", "send");
+
+                                    outMessage.println(JSONMessage);
                                 } catch (Exception e) {
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -193,19 +203,13 @@ public class MainActivity extends AppCompatActivity {
                 while (!isInterrupted()) {
                     // If there is an incoming message
                     if (inMessage.hasNext()) {
-                        Log.d("InMes", "i am not dead");
+                        Log.i("INF", "read");
+
                         // Read it
                         String inMes = inMessage.nextLine();
-                        String usrnm, txt;
-                        if (inMes.indexOf(":") != -1) {
-                            String[] msgLines = inMes.split(":");
-                            usrnm = msgLines[0];
-                            txt = msgLines[1];
-                        } else {
-                            usrnm = username;
-                            txt = inMes;
-                        }
-                        if (usrnm.equals(username) && txt.equals("I have entered the chat!")) {
+                        Log.d("INF", inMes);
+                        Message inMessage = gson.fromJson(inMes, Message.class);
+                        if (inMessage.username.equals(username) && inMessage.text.equals("I have entered the chat!")) {
                             continue;
                         }
                         Date currentTime = Calendar.getInstance().getTime();
@@ -214,13 +218,15 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                messages.add(new Message(txt, usrnm, hourMinute));
+                                messages.add(new Message(inMessage.text, inMessage.username, inMessage.time));
                                 // Display message
                                 adapter.notifyDataSetChanged();
                                 // Scroll down
                                 recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
                             }
                         });
+                    } else {
+                        Log.i("INF", "hasnt");
                     }
                 }
                 Log.d("InMes", "i close thread");
@@ -234,8 +240,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             } catch (Exception e) {
                 Log.d("InMes", "i am dead");
-                e.printStackTrace();
+                Log.d("INF", e.toString());
             }
+        }
+
+        public void send(String msg) {
+            outMessage.println(msg);
         }
     }
 
@@ -319,17 +329,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAttachMenu(View v) {
+        ClientConnection clientConnect = clientConnection;
         PopupMenu attachMenu = new PopupMenu(this, v);
         attachMenu.inflate(R.menu.attach_menu);
         attachMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.geolocation_item:
-                        Toast.makeText(getApplicationContext(),
-                                "To send geolocation, you need to buy a premium account.",
-                                Toast.LENGTH_SHORT).show();
+                    case R.id.geolocation_item: {
+                        Date currentTime = Calendar.getInstance().getTime();
+                        String hourMinute = getHourMinute(currentTime);
+                        Message tmpMsg = new Message("I am here:", username, hourMinute, "55.743564131584826:37.681442512953446");
+                        String JSONMessage = gson.toJson(tmpMsg);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                clientConnect.send(JSONMessage);
+                            }
+                        }).start();
                         return true;
+                    }
                     default:
                         return false;
                 }

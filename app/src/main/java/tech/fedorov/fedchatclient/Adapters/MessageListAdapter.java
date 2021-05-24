@@ -38,9 +38,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Message msg = mData.get(position);
-        String text = msg.getTextMessage();
-        String name = msg.getSenderUsername();
-        String dataTime = msg.getDateTime();
+        String text = msg.text;
+        String name = msg.username;
+        String dataTime = msg.time;
         holder.messageText.setText(text);
         holder.username.setText(name);
         holder.dataTime.setText(dataTime);
