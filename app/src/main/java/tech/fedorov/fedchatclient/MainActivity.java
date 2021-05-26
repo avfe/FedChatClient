@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.gson.Gson;
 
 import java.io.BufferedWriter;
@@ -51,6 +52,24 @@ public class MainActivity extends AppCompatActivity {
     ImageView connectionFailed;
     Thread connectAnimation;
     Gson gson;
+    private boolean firstConnection = true;
+    PopupMenu attachMenu;
+
+    private RecyclerView.RecyclerListener mRecycleListener = new RecyclerView.RecyclerListener() {
+
+        @Override
+        public void onViewRecycled(RecyclerView.ViewHolder holder) {
+            MessageListAdapter.ViewHolder mapHolder = (MessageListAdapter.ViewHolder) holder;
+            if (mapHolder != null && mapHolder.map != null) {
+                // Clear the map and free up resources by changing the map type to none.
+                // Also reset the map when it gets reattached to layout, so the previous map would
+                // not be displayed.
+                mapHolder.map.clear();
+                mapHolder.map.setMapType(GoogleMap.MAP_TYPE_NONE);
+            }
+        }
+    };
+
     /**
      *   Проверяем наличие базы
      *   Проверяем ключи
@@ -65,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState != null && savedInstanceState.containsKey("messages")) {
             messages = (ArrayList<Message>) savedInstanceState.getSerializable("messages");
+            firstConnection = (boolean) savedInstanceState.getBoolean("firstConnection");
         }
         gson = new Gson();
         // Getting data from StartActivity
@@ -78,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new MessageListAdapter(this, messages);
         recyclerView.setAdapter(adapter);
+        recyclerView.setRecyclerListener(mRecycleListener);
 
         // Getting IDs
         goBackButton = (ImageButton) findViewById(R.id.goBackButton);
@@ -138,16 +159,18 @@ public class MainActivity extends AppCompatActivity {
                 outMessage =
                         new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream())),
                                 true);
-                Date currentTime = Calendar.getInstance().getTime();
-                String hourMinute = getHourMinute(currentTime);
-                Message tmpMsg = new Message("I have entered the chat!", username, hourMinute);
-                String JSONMessage = gson.toJson(tmpMsg);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        outMessage.println(JSONMessage);
-                    }
-                }).start();
+                if (firstConnection) {
+                    Date currentTime = Calendar.getInstance().getTime();
+                    String hourMinute = getHourMinute(currentTime);
+                    Message tmpMsg = new Message("I have entered the chat!", username, hourMinute);
+                    String JSONMessage = gson.toJson(tmpMsg);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            outMessage.println(JSONMessage);
+                        }
+                    }).start();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -218,7 +241,13 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                messages.add(new Message(inMessage.text, inMessage.username, inMessage.time));
+                                if (inMessage.geo != null) {
+                                    messages.add(new Message(inMessage.text, inMessage.username, inMessage.time, inMessage.geo));
+                                    Log.d("MESSAGE", "I HAVE GEOOOOO!O!O!O!O");
+                                } else {
+                                    Log.d("MESSAGE", "New message without geo");
+                                    messages.add(new Message(inMessage.text, inMessage.username, inMessage.time));
+                                }
                                 // Display message
                                 adapter.notifyDataSetChanged();
                                 // Scroll down
@@ -228,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         Log.i("INF", "hasnt");
                     }
+                    Thread.sleep(100);
                 }
                 Log.d("InMes", "i close thread");
                 outMessage.flush();
@@ -239,7 +269,9 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } catch (Exception e) {
+                Log.d("EXITING", "exiting while interrupt");
                 Log.d("InMes", "i am dead");
+
                 Log.d("INF", e.toString());
             }
         }
@@ -330,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showAttachMenu(View v) {
         ClientConnection clientConnect = clientConnection;
-        PopupMenu attachMenu = new PopupMenu(this, v);
+        attachMenu = new PopupMenu(this, v);
         attachMenu.inflate(R.menu.attach_menu);
         attachMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -339,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.geolocation_item: {
                         Date currentTime = Calendar.getInstance().getTime();
                         String hourMinute = getHourMinute(currentTime);
-                        Message tmpMsg = new Message("I am here:", username, hourMinute, "55.743564131584826:37.681442512953446");
+                        Message tmpMsg = new Message("I am here:", username, hourMinute, "55.74356948607958:37.68156059562104");
                         String JSONMessage = gson.toJson(tmpMsg);
                         new Thread(new Runnable() {
                             @Override
@@ -375,11 +407,13 @@ public class MainActivity extends AppCompatActivity {
         clientConnection = null;
         connectAnimation.interrupt();
         connectAnimation = null;
+        firstConnection = false;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        sendButton.setOnClickListener(null);
         if (clientConnection == null) {
             startConnectAnimation();
             clientConnection = new ClientConnection(username);
@@ -391,5 +425,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("messages", messages);
+        outState.putBoolean("firstConnection", firstConnection);
     }
+
 }
