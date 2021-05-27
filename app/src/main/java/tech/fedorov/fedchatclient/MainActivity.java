@@ -1,5 +1,8 @@
 package tech.fedorov.fedchatclient;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,10 +17,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 
 import java.io.BufferedWriter;
@@ -32,28 +43,34 @@ import java.util.Scanner;
 
 import tech.fedorov.fedchatclient.Adapters.MessageListAdapter;
 import tech.fedorov.fedchatclient.Messages.Message;
+import tech.fedorov.fedchatclient.Utils.PermissionUtils;
 
 public class MainActivity extends AppCompatActivity {
-    MessageListAdapter adapter;
-    ArrayList<Message> messages = new ArrayList<>();
+    private MessageListAdapter adapter;
+    private ArrayList<Message> messages = new ArrayList<>();
     public ClientConnection clientConnection;
-    RecyclerView recyclerView;
-    String server_ip;
-    String server_port;
-    ImageButton sendButton;
-    ImageButton attachButton;
-    ImageButton goBackButton;
-    EditText userMessage;
-    Handler handler;
-    String username;
-    Bundle arguments;
-    TextView dotsConnecting;
-    ImageView isConnected;
-    ImageView connectionFailed;
-    Thread connectAnimation;
-    Gson gson;
+    private RecyclerView recyclerView;
+    private String server_ip;
+    private String server_port;
+    private ImageButton sendButton;
+    private ImageButton attachButton;
+    private ImageButton goBackButton;
+    private EditText userMessage;
+    private String username;
+    private Bundle arguments;
+    private TextView dotsConnecting;
+    private ImageView isConnected;
+    private ImageView connectionFailed;
+    private Thread connectAnimation;
+    private Gson gson;
     private boolean firstConnection = true;
-    PopupMenu attachMenu;
+    private PopupMenu attachMenu;
+
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private boolean locationPermissionGranted;
+    private Location lastKnownLocation;
+    private LatLng defaultLatLng = new LatLng(55.74356948607958, 37.68156059562104);
 
     private RecyclerView.RecyclerListener mRecycleListener = new RecyclerView.RecyclerListener() {
 
@@ -69,6 +86,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    private int countPaused = 0;
+    private final String KEY_MESSAGES = "messages";
+    private final String KEY_FIRSTCONNECTION = "firstConnection";
+    private final String KEY_COUNTPAUSED = "countPaused";
 
     /**
      *   Проверяем наличие базы
@@ -82,10 +103,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState != null && savedInstanceState.containsKey("messages")) {
-            messages = (ArrayList<Message>) savedInstanceState.getSerializable("messages");
-            firstConnection = (boolean) savedInstanceState.getBoolean("firstConnection");
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_MESSAGES)) {
+            messages = (ArrayList<Message>) savedInstanceState.getSerializable(KEY_MESSAGES);
         }
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_FIRSTCONNECTION)) {
+            firstConnection = (boolean) savedInstanceState.getBoolean(KEY_FIRSTCONNECTION);
+        }
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_COUNTPAUSED)) {
+            firstConnection = (boolean) savedInstanceState.getBoolean(KEY_COUNTPAUSED);
+        }
+
         gson = new Gson();
         // Getting data from StartActivity
         arguments = getIntent().getExtras();
@@ -115,6 +142,9 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        // Construct a FusedLocationProviderClient.
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         startConnectAnimation();
 
@@ -243,10 +273,14 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                 if (inMessage.geo != null) {
                                     messages.add(new Message(inMessage.text, inMessage.username, inMessage.time, inMessage.geo));
-                                    Log.d("MESSAGE", "I HAVE GEOOOOO!O!O!O!O");
+                                    Log.d("MESSAGE", "New message with geo");
                                 } else {
                                     Log.d("MESSAGE", "New message without geo");
                                     messages.add(new Message(inMessage.text, inMessage.username, inMessage.time));
+                                }
+                                if (countPaused > 0) {
+                                    messages.remove(messages.size()-1);
+                                    countPaused--;
                                 }
                                 // Display message
                                 adapter.notifyDataSetChanged();
@@ -369,17 +403,25 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.geolocation_item: {
-                        Date currentTime = Calendar.getInstance().getTime();
-                        String hourMinute = getHourMinute(currentTime);
-                        Message tmpMsg = new Message("I am here:", username, hourMinute, "55.74356948607958:37.68156059562104");
-                        String JSONMessage = gson.toJson(tmpMsg);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                clientConnect.send(JSONMessage);
+                        enableMyLocation();
+                        if (locationPermissionGranted) {
+                            Date currentTime = Calendar.getInstance().getTime();
+                            String hourMinute = getHourMinute(currentTime);
+                            LatLng tmplng = getDeviceLocation();
+                            if (tmplng == null) {
+                                tmplng = new LatLng(55.74356948607958, 37.68156059562104);
                             }
-                        }).start();
-                        return true;
+                            String geoLoc = tmplng.latitude + ":" + tmplng.longitude;
+                            Message tmpMsg = new Message("I am here:", username, hourMinute, geoLoc);
+                            String JSONMessage = gson.toJson(tmpMsg);
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    clientConnect.send(JSONMessage);
+                                }
+                            }).start();
+                            return true;
+                        }
                     }
                     default:
                         return false;
@@ -402,6 +444,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        countPaused += 1;
         // соединение с сервером обрываем
         clientConnection.interrupt();
         clientConnection = null;
@@ -426,6 +469,52 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putSerializable("messages", messages);
         outState.putBoolean("firstConnection", firstConnection);
+        outState.putInt("countPaused", countPaused);
     }
 
+    private void enableMyLocation() {
+        // [START maps_check_location_permission]
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            locationPermissionGranted = true;
+        } else {
+            // Permission to access the location is missing. Show rationale and request permission
+            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+        }
+        // [END maps_check_location_permission]
+    }
+
+    private LatLng getDeviceLocation() {
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
+        LatLng[] anyPlace = new LatLng[1];
+        try {
+            if (locationPermissionGranted) {
+                Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful()) {
+                            // Set the map's camera position to the current location of the device.
+                            lastKnownLocation = task.getResult();
+                            if (lastKnownLocation != null) {
+                                anyPlace[0] = new LatLng(lastKnownLocation.getLatitude(),
+                                        lastKnownLocation.getLongitude());
+                            }
+                        } else {
+                            anyPlace[0] = new LatLng(55.74356948607958, 37.68156059562104);
+                        }
+                    }
+                });
+                return anyPlace[0];
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage(), e);
+            return new LatLng(55.74356948607958, 37.68156059562104);
+        }
+        return new LatLng(55.74356948607958, 37.68156059562104);
+    }
 }
