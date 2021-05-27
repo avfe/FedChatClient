@@ -26,10 +26,7 @@ public class Cryptographer {
     private List<PublicKey> interlocutorsKeyList;
 
     Cryptographer(ArrayList<PublicKey> interlocutorsKeyList) {
-        // если есть ключи, то работаем дальше
-        // если нет ключей, то создаем и попросим ассистента отправить публичный ключ на сервер
         KeyPair keyPair = getKeyPair();
-        // сохраним ключи собеседников чата
         this.interlocutorsKeyList = interlocutorsKeyList;
     }
 
@@ -83,7 +80,6 @@ public class Cryptographer {
 
         byte[] data = null;
         try {
-            // Сериализация в байты
             data = cipher.doFinal(Message.serialize(message));
         } catch (BadPaddingException e) {
             e.printStackTrace();
