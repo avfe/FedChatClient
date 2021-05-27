@@ -408,6 +408,9 @@ public class MainActivity extends AppCompatActivity {
                             Date currentTime = Calendar.getInstance().getTime();
                             String hourMinute = getHourMinute(currentTime);
                             LatLng tmplng = getDeviceLocation();
+                            if (lastKnownLocation != null) {
+                                tmplng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                            }
                             if (tmplng == null) {
                                 tmplng = new LatLng(55.74356948607958, 37.68156059562104);
                             }
